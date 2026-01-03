@@ -4,13 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "dotenvx run -- nodemon",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.4",
     "express": "^5.2.1"
   },
   "devDependencies": {
