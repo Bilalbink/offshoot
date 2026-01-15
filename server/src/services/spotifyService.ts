@@ -54,10 +54,7 @@ class SpotifyService {
      * @returns Spotify token response with access and refresh tokens
      * @throws {TokenExchangeError} When token exchange fails
      */
-    async exchangeCodeForToken(
-        code: string,
-        state: string
-    ): Promise<SpotifyTokenResponse> {
+    async exchangeCodeForToken(code: string): Promise<SpotifyTokenResponse> {
         try {
             const response = await axios.post<SpotifyTokenResponse>(
                 `${this.SPOTIFY_AUTH_BASE_URL}/api/token/`,
@@ -80,6 +77,28 @@ class SpotifyService {
             return response.data;
         } catch (error) {
             return this.handleTokenError(error, "exchange");
+        }
+    }
+
+    async refreshToken(refresh_token: string): Promise<SpotifyTokenResponse> {
+        try {
+            const response = await axios.post<SpotifyTokenResponse>(
+                `${this.SPOTIFY_AUTH_BASE_URL}/api/token/`,
+                querystring.stringify({
+                    refresh_token,
+                    client_id: spotifyConfig.clientId,
+                    grant_type: "refresh_token",
+                }),
+                {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                }
+            );
+
+            return response.data;
+        } catch (error) {
+            return this.handleTokenError(error, "refresh");
         }
     }
 
