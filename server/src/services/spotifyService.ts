@@ -23,8 +23,8 @@ import {
 } from "../errors/spotify.errors";
 
 class SpotifyService {
-    private readonly SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com/";
-    private readonly SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1/";
+    private readonly SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
+    private readonly SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1";
 
     /**
      * Generates Spotify authorization URL to be used to redirect the user.
