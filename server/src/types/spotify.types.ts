@@ -12,7 +12,10 @@ export interface SpotifyAuthUrlResponse {
 
 export interface SpotifyTokenExchangeRequest {
     code: string;
-    state: string;
+}
+
+export interface SpotifyTokenRefreshRequest {
+    refresh_token: string;
 }
 
 export interface SpotifyError {
