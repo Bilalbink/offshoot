@@ -1,5 +1,8 @@
+import { serverConfig } from './config/server.config';
 import app from "./server";
 
-app.listen(3000, () => {
-  console.log('Express is running on port 3000');
+const PORT = serverConfig.port;
+
+app.listen(PORT, () => {
+  console.log(`Express is running on http://127.0.0.1:${PORT}`);
 })
