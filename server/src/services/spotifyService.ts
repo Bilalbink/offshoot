@@ -1,6 +1,6 @@
 // External libraries
-import axios, { Axios, AxiosError } from "axios";
 import querystring from "querystring";
+import axios, { Axios, AxiosError } from "axios";
 
 // Config
 import { spotifyConfig } from "../config/spotify.config";
@@ -13,7 +13,7 @@ import {
 } from "../types/spotify.types";
 
 // Helpers
-import { encodeBasicAuth, generateRandomString } from "../utils/helpers";
+import { encodeBasicAuth, generateStateToken } from "../utils/helpers";
 
 // Errors
 import {
@@ -26,11 +26,18 @@ class SpotifyService {
     private readonly SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
     private readonly SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1";
 
+    // In-memory store for state tokens (#TODO: Switch to Redis)
+    private stateStore = new Map<string, { expires: number }>();
+
     /**
      * Generates Spotify authorization URL to be used to redirect the user.
      */
     generateAuthUrl(): SpotifyAuthUrlResponse {
-        const state = generateRandomString(16);
+        const state = generateStateToken(16);
+
+        this.stateStore.set(state, {
+            expires: Date.now() + 5 * 60 * 1000, // 5 minutes
+        });
 
         const authUrl =
             `${this.SPOTIFY_AUTH_BASE_URL}/authorize?` +
@@ -54,8 +61,15 @@ class SpotifyService {
      * @returns Spotify token response with access and refresh tokens
      * @throws {TokenExchangeError} When token exchange fails
      */
-    async exchangeCodeForToken(code: string): Promise<SpotifyTokenResponse> {
+    async exchangeCodeForToken(
+        code: string,
+        state: string
+    ): Promise<SpotifyTokenResponse> {
         try {
+            if (!this.validateState(state)) {
+                throw "State token is invalid or expired. Please try logging in again.";
+            }
+
             const response = await axios.post<SpotifyTokenResponse>(
                 `${this.SPOTIFY_AUTH_BASE_URL}/api/token/`,
                 querystring.stringify({
@@ -183,6 +197,28 @@ class SpotifyService {
         }
 
         return `Failed to ${operation} token. Please try again.`;
+    }
+
+    /**
+     * Validate state token
+     */
+    private validateState(state: string): boolean {
+        const storedState = this.stateStore.get(state);
+
+        if (!storedState) {
+            return false;
+        }
+
+        // Check if expired
+        if (Date.now() > storedState.expires) {
+            this.stateStore.delete(state);
+            return false;
+        }
+
+        // Valid state - remove it (one-time use)
+        this.stateStore.delete(state);
+
+        return true;
     }
 }
 

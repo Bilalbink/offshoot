@@ -12,6 +12,7 @@ export interface SpotifyAuthUrlResponse {
 
 export interface SpotifyTokenExchangeRequest {
     code: string;
+    state: string;
 }
 
 export interface SpotifyTokenRefreshRequest {

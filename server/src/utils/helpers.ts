@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 /**
  * Generates a cryptographically random string of specified length
  *
@@ -10,18 +12,8 @@
  * // Returns something like: "aB3dEf9GhI2jKlMn"
  * ```
  */
-export const generateRandomString = (length: number): string => {
-    const letterBank =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let randomString = "";
-
-    for (let i = 0; i < length; i++) {
-        randomString += letterBank.charAt(
-            Math.floor(Math.random() * letterBank.length)
-        );
-    }
-
-    return randomString;
+export const generateStateToken = (length: number): string => {
+    return crypto.randomBytes(length).toString("hex");
 };
 
 /**

@@ -36,10 +36,11 @@ class AuthController {
         next: NextFunction
     ): Promise<void> {
         try {
-            const { code } = req.body;
+            const { code, state } = req.body;
 
             const token_details = await spotifyService.exchangeCodeForToken(
-                code
+                code,
+                state
             );
 
             res.json(token_details);
