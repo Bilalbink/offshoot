@@ -1,23 +1,20 @@
-export interface SpotifyTokenResponse {
-    access_token: string;
-    token_type: string;
-    expires_in: number;
-    refresh_token: string;
-    scope: string;
-}
+import { z } from "zod";
+import {
+    tokenExchangeRequestSchema,
+    tokenRefreshRequestSchema,
+    tokenResponseSchema,
+    authUrlResponseSchema,
+} from "../validators/auth.validator";
 
-export interface SpotifyAuthUrlResponse {
-    url: string;
-}
-
-export interface SpotifyTokenExchangeRequest {
-    code: string;
-    state: string;
-}
-
-export interface SpotifyTokenRefreshRequest {
-    refresh_token: string;
-}
+// Infer TypeScript types from Zod schemas
+export type SpotifyTokenExchangeRequest = z.infer<
+    typeof tokenExchangeRequestSchema
+>;
+export type SpotifyTokenRefreshRequest = z.infer<
+    typeof tokenRefreshRequestSchema
+>;
+export type SpotifyTokenResponse = z.infer<typeof tokenResponseSchema>;
+export type SpotifyAuthUrlResponse = z.infer<typeof authUrlResponseSchema>;
 
 export interface SpotifyError {
     error: string;

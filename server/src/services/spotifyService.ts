@@ -67,7 +67,9 @@ class SpotifyService {
     ): Promise<SpotifyTokenResponse> {
         try {
             if (!this.validateState(state)) {
-                throw "State token is invalid or expired. Please try logging in again.";
+                throw Error(
+                    "State token is invalid or expired. Please try logging in again."
+                );
             }
 
             const response = await axios.post<SpotifyTokenResponse>(
