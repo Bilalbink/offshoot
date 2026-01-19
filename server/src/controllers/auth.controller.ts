@@ -1,6 +1,6 @@
 // src/controllers/auth.controller.ts
 import { Request, Response, NextFunction } from "express";
-import spotifyService from "../services/spotifyService";
+import spotifyService from "../services/spotify.service";
 import {
     SpotifyAuthUrlResponse,
     SpotifyTokenExchangeRequest,
@@ -16,7 +16,7 @@ class AuthController {
     async getAuthUrl(
         req: Request<{}, {}, {}>,
         res: Response<SpotifyAuthUrlResponse>,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const authUrl = spotifyService.generateAuthUrl();
@@ -33,14 +33,14 @@ class AuthController {
     async exchangeToken(
         req: Request<{}, {}, SpotifyTokenExchangeRequest>,
         res: Response<SpotifyTokenResponse>,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const { code, state } = req.body;
 
             const token_details = await spotifyService.exchangeCodeForToken(
                 code,
-                state
+                state,
             );
 
             res.json(token_details);
@@ -52,14 +52,13 @@ class AuthController {
     async refreshToken(
         req: Request<{}, {}, SpotifyTokenRefreshRequest>,
         res: Response<SpotifyTokenResponse>,
-        next: NextFunction
+        next: NextFunction,
     ): Promise<void> {
         try {
             const { refresh_token } = req.body;
 
-            const token_details = await spotifyService.refreshToken(
-                refresh_token
-            );
+            const token_details =
+                await spotifyService.refreshToken(refresh_token);
 
             res.json(token_details);
         } catch (error) {
