@@ -9,8 +9,10 @@ import { spotifyConfig } from "../config/spotify.config";
 import {
     SpotifyTokenResponse,
     SpotifyAuthUrlResponse,
-    SpotifyServiceOerations,
-} from "../types/spotify.types";
+    SpotifyUserProfileResponse,
+} from "../types/auth.types";
+
+import { SpotifyServiceOerations } from "../types/spotify.types";
 
 // Helpers
 import { encodeBasicAuth, generateStateToken } from "../utils/helpers";
@@ -63,12 +65,12 @@ class SpotifyService {
      */
     async exchangeCodeForToken(
         code: string,
-        state: string
+        state: string,
     ): Promise<SpotifyTokenResponse> {
         try {
             if (!this.validateState(state)) {
                 throw Error(
-                    "State token is invalid or expired. Please try logging in again."
+                    "State token is invalid or expired. Please try logging in again.",
                 );
             }
 
@@ -83,11 +85,11 @@ class SpotifyService {
                     headers: {
                         Authorization: `Basic ${encodeBasicAuth(
                             spotifyConfig.clientId,
-                            spotifyConfig.clientSecret
+                            spotifyConfig.clientSecret,
                         )}`,
                         "Content-Type": "application/x-www-form-urlencoded",
                     },
-                }
+                },
             );
 
             return response.data;
@@ -109,7 +111,7 @@ class SpotifyService {
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
                     },
-                }
+                },
             );
 
             return response.data;
@@ -127,7 +129,7 @@ class SpotifyService {
      */
     private handleTokenError(
         error: unknown,
-        operation: SpotifyServiceOerations
+        operation: SpotifyServiceOerations,
     ): never {
         if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError<{
@@ -144,7 +146,7 @@ class SpotifyService {
             const errorMessage = this.mapSpotifyError(
                 spotifyError,
                 errorDescription,
-                operation
+                operation,
             );
 
             // Throw appropriate error type
@@ -178,7 +180,7 @@ class SpotifyService {
     private mapSpotifyError(
         spotifyError?: string,
         errorDescription?: string,
-        operation?: string
+        operation?: string,
     ): string {
         const errorMap: Record<string, string> = {
             invalid_grant:

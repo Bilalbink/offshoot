@@ -6,7 +6,7 @@ import {
     SpotifyTokenExchangeRequest,
     SpotifyTokenRefreshRequest,
     SpotifyTokenResponse,
-} from "../types/spotify.types";
+} from "../types/auth.types";
 
 class AuthController {
     /**
