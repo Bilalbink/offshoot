@@ -1,6 +1,8 @@
+import { z } from "zod";
+import { zSpotifyUserProfileSchema } from "../validators/user.validator";
 export interface SpotifyError {
     error: string;
     error_description?: string;
 }
 
-export type SpotifyServiceOerations = "exchange" | "refresh";
+export type SpotifyUserProfile = z.infer<typeof zSpotifyUserProfileSchema>;

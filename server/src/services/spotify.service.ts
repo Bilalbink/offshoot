@@ -1,122 +1,43 @@
 // External libraries
-import querystring from "querystring";
-import axios, { Axios, AxiosError } from "axios";
+import axios from "axios";
 
-// Config
-import { spotifyConfig } from "../config/spotify.config";
+// Services
+import appwriteService from "./appwrite.service";
 
 // Types
-import {
-    SpotifyTokenResponse,
-    SpotifyAuthUrlResponse,
-    SpotifyUserProfileResponse,
-} from "../types/auth.types";
-
-import { SpotifyServiceOerations } from "../types/spotify.types";
-
-// Helpers
-import { encodeBasicAuth, generateStateToken } from "../utils/helpers";
+import { SpotifyUserProfile } from "../types/spotify.types";
 
 // Errors
-import {
-    SpotifyApiError,
-    TokenExchangeError,
-    TokenRefreshError,
-} from "../errors/spotify.errors";
+import { SpotifyApiError } from "../errors/spotify.errors";
 
 class SpotifyService {
-    private readonly SPOTIFY_AUTH_BASE_URL = "https://accounts.spotify.com";
     private readonly SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1";
 
-    // In-memory store for state tokens (#TODO: Switch to Redis)
-    private stateStore = new Map<string, { expires: number }>();
-
     /**
-     * Generates Spotify authorization URL to be used to redirect the user.
+     * Get Spotify user profile
      */
-    generateAuthUrl(): SpotifyAuthUrlResponse {
-        const state = generateStateToken(16);
-
-        this.stateStore.set(state, {
-            expires: Date.now() + 5 * 60 * 1000, // 5 minutes
-        });
-
-        const authUrl =
-            `${this.SPOTIFY_AUTH_BASE_URL}/authorize?` +
-            querystring.stringify({
-                response_type: "code",
-                client_id: spotifyConfig.clientId,
-                scope: spotifyConfig.scopes,
-                redirect_uri: spotifyConfig.redirectUri,
-                state: state,
-            });
-
-        return {
-            url: authUrl,
-        };
-    }
-
-    /**
-     * Exchange authorization code for access token
-     *
-     * @param code - Authorization code from Spotify callback
-     * @returns Spotify token response with access and refresh tokens
-     * @throws {TokenExchangeError} When token exchange fails
-     */
-    async exchangeCodeForToken(
-        code: string,
-        state: string,
-    ): Promise<SpotifyTokenResponse> {
+    async getUserProfile(session: string): Promise<SpotifyUserProfile> {
         try {
-            if (!this.validateState(state)) {
-                throw Error(
-                    "State token is invalid or expired. Please try logging in again.",
-                );
+            // Get Spotify token from Appwrite
+            const spotifyToken = await appwriteService.getSpotifyToken(session);
+
+            if (!spotifyToken) {
+                throw new Error("No Spotify token found");
             }
 
-            const response = await axios.post<SpotifyTokenResponse>(
-                `${this.SPOTIFY_AUTH_BASE_URL}/api/token/`,
-                querystring.stringify({
-                    code,
-                    redirect_uri: spotifyConfig.redirectUri,
-                    grant_type: "authorization_code",
-                }),
+            // Call Spotify API
+            const response = await axios.get(
+                `${this.SPOTIFY_API_BASE_URL}/me`,
                 {
                     headers: {
-                        Authorization: `Basic ${encodeBasicAuth(
-                            spotifyConfig.clientId,
-                            spotifyConfig.clientSecret,
-                        )}`,
-                        "Content-Type": "application/x-www-form-urlencoded",
+                        Authorization: `Bearer ${spotifyToken}`,
                     },
                 },
             );
 
             return response.data;
         } catch (error) {
-            return this.handleTokenError(error, "exchange");
-        }
-    }
-
-    async refreshToken(refresh_token: string): Promise<SpotifyTokenResponse> {
-        try {
-            const response = await axios.post<SpotifyTokenResponse>(
-                `${this.SPOTIFY_AUTH_BASE_URL}/api/token/`,
-                querystring.stringify({
-                    refresh_token,
-                    client_id: spotifyConfig.clientId,
-                    grant_type: "refresh_token",
-                }),
-                {
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                },
-            );
-
-            return response.data;
-        } catch (error) {
-            return this.handleTokenError(error, "refresh");
+            return this.handleTokenError(error);
         }
     }
 
@@ -124,105 +45,27 @@ class SpotifyService {
      * Centralized error handler for token operations
      *
      * @param error - The error that occurred
-     * @param operation - Type of operation ('exchange' or 'refresh')
-     * @throws {TokenExchangeError | TokenRefreshError | SpotifyApiError}
+     * @throws {SpotifyApiError | Error}
      */
-    private handleTokenError(
-        error: unknown,
-        operation: SpotifyServiceOerations,
-    ): never {
+    private handleTokenError(error: unknown): never {
         if (axios.isAxiosError(error)) {
-            const axiosError = error as AxiosError<{
-                error: string;
-                error_description?: string;
-            }>;
+            // Return Spotify API error response as-is
+            const statusCode = error.response?.status || 500;
+            const errorData = error.response?.data || {
+                error: "Unknown Spotify API error",
+            };
 
-            const statusCode = axiosError.response?.status || 500;
-            const spotifyError = axiosError.response?.data?.error;
-            const errorDescription =
-                axiosError.response?.data?.error_description;
-
-            // Map common Spotify errors to user-friendly messages
-            const errorMessage = this.mapSpotifyError(
-                spotifyError,
-                errorDescription,
-                operation,
+            throw new SpotifyApiError(
+                JSON.stringify(errorData),
+                statusCode,
+                error,
             );
-
-            // Throw appropriate error type
-            if (operation === "exchange") {
-                throw new TokenExchangeError(errorMessage, statusCode, error);
-            } else {
-                throw new TokenRefreshError(errorMessage, statusCode, error);
-            }
         }
 
+        // Generic error
         const message =
-            error instanceof Error
-                ? error.message
-                : `Unexpected error during token ${operation}`;
-
-        if (operation === "exchange") {
-            throw new TokenExchangeError(message, 500, error);
-        } else {
-            throw new TokenRefreshError(message, 500, error);
-        }
-    }
-
-    /**
-     * Map Spotify error codes to user-friendly messages
-     *
-     * @param spotifyError - Error code from Spotify API
-     * @param errorDescription - Error description from Spotify API
-     * @param operation - Type of operation
-     * @returns User-friendly error message
-     */
-    private mapSpotifyError(
-        spotifyError?: string,
-        errorDescription?: string,
-        operation?: string,
-    ): string {
-        const errorMap: Record<string, string> = {
-            invalid_grant:
-                "Authorization code is invalid or expired. Please try logging in again.",
-            invalid_client:
-                "This action cannot be performed at the moment. Please try again later.",
-            invalid_request: "Invalid request parameters. Please try again.",
-            unauthorized_client:
-                "This application is not authorized to use this grant type.",
-        };
-
-        if (spotifyError && errorMap[spotifyError]) {
-            return errorMap[spotifyError];
-        }
-
-        if (errorDescription) {
-            return errorDescription;
-        }
-
-        return `Failed to ${operation} token. Please try again.`;
-    }
-
-    /**
-     * Validate state token
-     */
-    private validateState(state: string): boolean {
-        const storedState = this.stateStore.get(state);
-
-        if (!storedState) {
-            return false;
-        }
-
-        // Check if expired
-        if (Date.now() > storedState.expires) {
-            this.stateStore.delete(state);
-            return false;
-        }
-
-        // Valid state - remove it (one-time use)
-        this.stateStore.delete(state);
-
-        return true;
+            error instanceof Error ? error.message : "Unknown error occurred";
+        throw new Error(message);
     }
 }
 
