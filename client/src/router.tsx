@@ -1,9 +1,9 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
-import authService from "../services/auth.service";
+import authService from "./services/auth.service";
 
 // Layouts
-import RootLayout from "../components/layouts/RootLayout";
-import ProtectedLayout from "../components/layouts/ProtectedLayout";
+import RootLayout from "./components/layouts/RootLayout";
+import ProtectedLayout from "./components/layouts/ProtectedLayout";
 
 // Pages
 import Login from "./pages/Login";
