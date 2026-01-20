@@ -16,4 +16,6 @@ app.use(express.urlencoded({ extended: true }));
 // API Routes (all under /api)
 app.use("/api", routes);
 
+app.use(errorHandler);
+
 export default app;
