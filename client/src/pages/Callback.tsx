@@ -1,36 +1,36 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import authService from "../services/auth.service";
 
 const AuthCallback = () => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const handleCallback = async () => {
-            try {
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+        const token = searchParams.get("token");
+        const error = searchParams.get("error");
 
-                const user = await authService.getCurrentUser();
+        console.log(token);
+        console.log(error);
 
-                if (user) {
-                    navigate("/dashboard");
-                } else {
-                    navigate("/login?error=auth_failed");
-                }
-            } catch (error) {
-                console.error("Auth callback error", error);
-                navigate("/login?error=auth_failed");
-            }
-        };
+        if (error) {
+            console.error("Auth error:", error);
+            navigate("/login?error=" + error);
+            return;
+        }
 
-        handleCallback();
-    }, [navigate]);
+        if (token) {
+            // Save JWT token
+            authService.setToken(token);
+            navigate("/dashboard");
+        } else {
+            navigate("/login?error=no_token");
+        }
+    }, [searchParams, navigate]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen">
-            <div className="text-center">
-                <span className="loading loading-ring loading-xl text-primary"></span>
-            </div>
+        <div className="min-h-screen bg-black text-white flex items-center justify-center">
+            <div>Completing authentication...</div>
         </div>
     );
 };

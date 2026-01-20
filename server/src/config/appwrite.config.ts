@@ -29,6 +29,7 @@ export const createAdminClient = () => {
 };
 
 export const createSessionClient = (session: string) => {
+    console.log(appwriteConfig);
     const client = new Client()
         .setEndpoint(appwriteConfig.endpoint)
         .setProject(appwriteConfig.projectId)

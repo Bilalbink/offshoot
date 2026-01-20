@@ -11,17 +11,14 @@ import AuthCallback from "./pages/Callback";
 import Dashboard from "./pages/Dashboard";
 
 const protectedLoader = async () => {
-    const user = await authService.getCurrentUser();
-    if (!user) {
-        throw redirect("/");
+    if (!authService.isAuthenticated()) {
+        throw redirect("/login");
     }
-    return { user };
+    return null;
 };
 
-// Loader to redirect if already authenticated
 const publicLoader = async () => {
-    const user = await authService.getCurrentUser();
-    if (user) {
+    if (authService.isAuthenticated()) {
         throw redirect("/dashboard");
     }
     return null;

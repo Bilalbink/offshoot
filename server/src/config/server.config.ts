@@ -1,7 +1,9 @@
-import '@dotenvx/dotenvx';
+import "@dotenvx/dotenvx";
 
 export const serverConfig = {
-  port: process.env.PORT || 3000,
-  corsOrigin: process.env.CORS_ORIGIN || 'http://127.0.0.1:5173',
-  nodeEnv: process.env.NODE_ENV || 'development',
+    port: process.env.PORT || 3000,
+    corsOrigin: process.env.CORS_ORIGIN!,
+    nodeEnv: process.env.NODE_ENV || "development",
+    backendUrl: process.env.BACKEND_URL!,
+    jwtSecret: process.env.JWT_SECRET!,
 };
