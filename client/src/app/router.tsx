@@ -13,7 +13,7 @@ import Dashboard from "./pages/Dashboard";
 const protectedLoader = async () => {
     const user = await authService.getCurrentUser();
     if (!user) {
-        throw redirect("/App");
+        throw redirect("/");
     }
     return { user };
 };
