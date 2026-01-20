@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyAppwriteSession } from "../middleware/appwrite-auth.middleware";
+import { verifyJWTMiddleware } from "../middleware/auth.middlewarte";
 import userController from "../controllers/user.controller";
 
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // Protected route - requires authentication
 router.get(
     "/spotify-profile",
-    verifyAppwriteSession,
+    verifyJWTMiddleware,
     userController.getSpotifyProfile,
 );
 

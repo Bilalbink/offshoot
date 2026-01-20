@@ -1,70 +1,27 @@
-import { Client, Account, OAuthProvider } from "appwrite";
-import { spotifyConfig } from "../config/spotify.config";
+const API_URL = import.meta.env.VITE_API_URL!;
 
-const client = new Client()
-    .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT!)
-    .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID!);
+const authService = {
+    loginWithSpotify: () => {
+        // Redirect to backend OAuth endpoint
+        window.location.href = `${API_URL}/auth/spotify`;
+    },
 
-const account = new Account(client);
+    logout: () => {
+        localStorage.removeItem("auth_token");
+        window.location.href = "/login";
+    },
 
-class AuthService {
-    /**
-     * Login with Spotify via Appwrite
-     */
-    loginWithSpotify() {
-        account.createOAuth2Session({
-            provider: OAuthProvider.Spotify,
-            success: `${window.location.origin}/auth/callback`,
-            failure: `${window.location.origin}/auth/failure`,
-            scopes: spotifyConfig.scopes,
-        });
-    }
+    getToken: (): string | null => {
+        return localStorage.getItem("auth_token");
+    },
 
-    /**
-     * Get current session
-     */
-    async getCurrentSession() {
-        try {
-            const session = await account.getSession({ sessionId: "current" });
-            return session;
-        } catch (error) {
-            return null;
-        }
-    }
+    setToken: (token: string) => {
+        localStorage.setItem("auth_token", token);
+    },
 
-    /**
-     * Get session token (for API calls)
-     */
-    async getSessionToken() {
-        try {
-            const session = await this.getCurrentSession();
-            return session?.$id || null;
-        } catch (error) {
-            return null;
-        }
-    }
+    isAuthenticated: (): boolean => {
+        return !!localStorage.getItem("auth_token");
+    },
+};
 
-    /**
-     * Logout
-     */
-    async logout() {
-        try {
-            await account.deleteSession({ sessionId: "current" });
-        } catch (error) {
-            console.error("Logout failed", error);
-        }
-    }
-
-    /**
-     * Get current user
-     */
-    async getCurrentUser() {
-        try {
-            return await account.get();
-        } catch (error) {
-            return null;
-        }
-    }
-}
-
-export default new AuthService();
+export default authService;
