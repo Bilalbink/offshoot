@@ -104,121 +104,129 @@ const TrackView = ({ playlist }: TrackViewProps) => {
                 createPlaylist={createPlaylist}
                 isSplitPlaylistLoading={isSplitPlaylistLoading}
             />
-
-            {/* Filters and Stats */}
-            <div className="flex justify-between items-center mb-4">
-                <div className="text-sm text-base-content/60">
-                    Total Tracks:{" "}
-                    <span className="font-bold">{totalTracks}</span>
-                    {selectedGenre && (
-                        <button
-                            className="btn btn-s btn-primary ml-6 "
-                            onClick={() => toggleModal()}
-                        >
-                            Split Playlist
-                        </button>
-                    )}
+            {isLoading ? (
+                <div className="w-full flex flex-row items-center justify-center text-2xl">
+                    Getting tracks
+                    <span className="ml-5 loading loading-ring loading-xl text-primary"></span>
                 </div>
-
-                {/* Genre Filter */}
-                <div className="form-control w-full max-w-xs">
-                    <select
-                        className="select select-bordered"
-                        value={selectedGenre}
-                        onChange={(e) => handleGenreChange(e.target.value)}
-                        disabled={isLoading}
-                    >
-                        <option value="">All Genres</option>
-                        {availableGenres?.map((genre) => (
-                            <option key={genre} value={genre}>
-                                {genre}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="table">
-                    {/* head */}
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Album</th>
-                            <th>Artist</th>
-                            <th>Genre</th>
-                        </tr>
-                    </thead>
-                    {error ? (
-                        <div className="alert alert-error mb-8">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="stroke-current shrink-0 h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                            <span>Failed to load playlist tracks</span>
+            ) : (
+                <div>
+                    {/* Filters and Stats */}
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="text-sm text-base-content/60">
+                            Total Tracks:{" "}
+                            <span className="font-bold">{totalTracks}</span>
+                            {selectedGenre && (
+                                <button
+                                    className="btn btn-s btn-primary ml-6 "
+                                    onClick={() => toggleModal()}
+                                >
+                                    Split Playlist
+                                </button>
+                            )}
                         </div>
-                    ) : isLoading ? (
-                        <tbody className="gap-5">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                                <tr key={index} className="mb-5">
-                                    <td className="skeleton h-10"></td>
-                                    <td className="skeleton h-10"></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    ) : (
-                        <tbody>
-                            {currentTracks?.map((track) => (
-                                <tr key={track.track.id}>
-                                    <td>
-                                        <div className=" flex items-center gap-3">
-                                            <div className="avatar">
-                                                <div className="mask mask-squircle h-12 w-12">
-                                                    <img
-                                                        src={
-                                                            track.track.album
-                                                                .images[0].url
-                                                        }
-                                                        alt={
-                                                            track.track.album
-                                                                .name
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className="font-bold">
-                                                    {track.track.name}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{track.track.album.name}</td>
-                                    <td>
-                                        {track.track.artists
-                                            .map((artist) => artist.name)
-                                            .join(", ")}
-                                    </td>
-                                    <td>
-                                        {track.track.artists
-                                            .map((artist) => artist.genres)
-                                            .join(", ")}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    )}
-                </table>
-            </div>
 
+                        {/* Genre Filter */}
+                        <div className="form-control w-full max-w-xs">
+                            <select
+                                className="select select-bordered"
+                                value={selectedGenre}
+                                onChange={(e) =>
+                                    handleGenreChange(e.target.value)
+                                }
+                                disabled={isLoading}
+                            >
+                                <option value="">All Genres</option>
+                                {availableGenres?.map((genre) => (
+                                    <option key={genre} value={genre}>
+                                        {genre}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="table">
+                            {/* head */}
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Album</th>
+                                    <th>Artist</th>
+                                    <th>Genre</th>
+                                </tr>
+                            </thead>
+                            {error ? (
+                                <div className="alert alert-error mb-8">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="stroke-current shrink-0 h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                    </svg>
+                                    <span>Failed to load playlist tracks</span>
+                                </div>
+                            ) : (
+                                <tbody>
+                                    {currentTracks?.map((track) => (
+                                        <tr key={track.track.id}>
+                                            <td>
+                                                <div className=" flex items-center gap-3">
+                                                    <div className="avatar">
+                                                        <div className="mask mask-squircle h-12 w-12">
+                                                            <img
+                                                                src={
+                                                                    track.track
+                                                                        .album
+                                                                        .images[0]
+                                                                        .url
+                                                                }
+                                                                alt={
+                                                                    track.track
+                                                                        .album
+                                                                        .name
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold">
+                                                            {track.track.name}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{track.track.album.name}</td>
+                                            <td>
+                                                {track.track.artists
+                                                    .map(
+                                                        (artist) => artist.name,
+                                                    )
+                                                    .join(", ")}
+                                            </td>
+                                            <td>
+                                                {track.track.artists
+                                                    .map(
+                                                        (artist) =>
+                                                            artist.genres,
+                                                    )
+                                                    .join(", ")}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            )}
+                        </table>
+                    </div>
+                </div>
+            )}
             {/* Pagination */}
             {!isLoading && !error && totalPages > 1 && (
                 <div className="flex justify-between items-center mt-4">
