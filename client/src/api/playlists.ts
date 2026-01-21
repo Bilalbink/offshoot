@@ -23,4 +23,28 @@ export const playlistsApi = {
 
         return response.data.data;
     },
+
+    splitPlaylist: async (
+        spotifyUserId: string,
+        playlistName: string,
+        description: string,
+        songUris: string[],
+    ): Promise<{
+        message: string;
+        snapshotId: string;
+    }> => {
+        const response = await apiClient.post<
+            ApiResponse<{
+                message: string;
+                snapshotId: string;
+            }>
+        >(`/playlists/split`, {
+            spotifyUserId,
+            playlistName,
+            description,
+            songUris,
+        });
+
+        return response.data.data;
+    },
 };

@@ -2,9 +2,13 @@ import { useState } from "react";
 
 type SplitPlaylistModalProps = {
     createPlaylist: (playlistName: string, description: string) => void;
+    isSplitPlaylistLoading: boolean;
 };
 
-const SplitPlaylistModal = ({ createPlaylist }: SplitPlaylistModalProps) => {
+const SplitPlaylistModal = ({
+    createPlaylist,
+    isSplitPlaylistLoading,
+}: SplitPlaylistModalProps) => {
     const [playlistName, setPlaylistName] = useState("");
     const [description, setDescription] = useState("");
 
@@ -48,10 +52,14 @@ const SplitPlaylistModal = ({ createPlaylist }: SplitPlaylistModalProps) => {
                     <div className="modal-action">
                         <button
                             type="submit"
-                            className="btn btn-primary dista"
+                            className="btn btn-primary min-w-35"
                             disabled={!playlistName}
                         >
-                            Create Playlist
+                            {isSplitPlaylistLoading ? (
+                                <span className="loading loading-spinner loading-md"></span>
+                            ) : (
+                                "Create Playlist"
+                            )}
                         </button>
                     </div>
                 </form>

@@ -1,15 +1,29 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../../../contexts/UserContext";
 import { type SpotifyPlaylist } from "../../../types";
-import { useSpotifyPlaylistTracks } from "../../../hooks/spotifyHooks";
+import {
+    useSpotifyPlaylistTracks,
+    useSplitPlaylist,
+} from "../../../hooks/spotifyHooks";
 import SplitPlaylistModal from "./SplitPlaylistModal";
 
 type TrackViewProps = {
     playlist: SpotifyPlaylist;
 };
 const TrackView = ({ playlist }: TrackViewProps) => {
+    const navigate = useNavigate();
+
     const { tracks, availableGenres, isLoading, error } =
         useSpotifyPlaylistTracks(playlist.id);
+    const {
+        splitPlaylist,
+        isSplitPlaylistLoading,
+        setSplitPlaylistError,
+        splitPlaylistError,
+    } = useSplitPlaylist();
 
+    const { spotifyUserId } = useUser();
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedGenre, setSelectedGenre] = useState<string>("");
     const modal = document.getElementById("split-playlist-modal");
@@ -35,6 +49,17 @@ const TrackView = ({ playlist }: TrackViewProps) => {
     const endIndex = startIndex + tracksPerPage;
     const currentTracks = filteredTracks.slice(startIndex, endIndex);
 
+    // TODO: make a shared notification component
+    useEffect(() => {
+        if (!splitPlaylistError) return;
+
+        const timer = setTimeout(() => {
+            setSplitPlaylistError(null);
+        }, 3000); // 3 seconds
+
+        return () => clearTimeout(timer); // cleanup if component unmounts
+    }, [splitPlaylistError]);
+
     // Reset to page 1 when filter changes
     const handleGenreChange = (genre: string) => {
         setSelectedGenre(genre);
@@ -48,17 +73,37 @@ const TrackView = ({ playlist }: TrackViewProps) => {
     };
 
     const createPlaylist = (playlistName: string, description: string) => {
-        const filteredSongUris = currentTracks
-            .map((track) => `spotify%3Atrack%3A${track.track.id}`)
-            .join(",");
+        const filteredSongUris = currentTracks.map(
+            (track) => `spotify:track:${track.track.id}`,
+        );
 
-        console.log(filteredSongUris);
+        if (spotifyUserId) {
+            splitPlaylist(
+                spotifyUserId,
+                playlistName,
+                description,
+                filteredSongUris,
+            );
+
+            navigate("/dashboard");
+        }
     };
 
     return (
         <div>
+            {/* Alert TODO: incorrect error message displayed*/}
+            {splitPlaylistError && (
+                <div className="toast toast-top toast-center">
+                    <div className="alert alert-error">
+                        <span>{splitPlaylistError.message}</span>
+                    </div>
+                </div>
+            )}
             {/* Modal */}
-            <SplitPlaylistModal createPlaylist={createPlaylist} />
+            <SplitPlaylistModal
+                createPlaylist={createPlaylist}
+                isSplitPlaylistLoading={isSplitPlaylistLoading}
+            />
 
             {/* Filters and Stats */}
             <div className="flex justify-between items-center mb-4">

@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { UserProvider } from "../../contexts/UserContext";
 import { Link } from "react-router-dom";
 export const ProtectedLayout = () => {
     const { authService } = useAuth();
@@ -22,7 +23,9 @@ export const ProtectedLayout = () => {
                 </button>
             </div>
             <main>
-                <Outlet />
+                <UserProvider>
+                    <Outlet />
+                </UserProvider>
             </main>
         </div>
     );
