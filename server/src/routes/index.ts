@@ -10,6 +10,6 @@ const router = Router();
  */
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
-router.use("/playlistRoutes", playlistRoutes);
+router.use("/playlists", playlistRoutes);
 
 export default router;
