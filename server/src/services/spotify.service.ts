@@ -6,6 +6,8 @@ import appwriteService from "./appwrite.service";
 
 // Types
 import {
+    SpotifyTrack,
+    SpotifyArtist,
     SpotifyUserProfile,
     SpotifyUserPlaylist,
 } from "../types/spotify.types";
@@ -35,12 +37,14 @@ class SpotifyService {
         url: string,
         token: string,
         data?: any,
+        params?: any,
         retryCount = 0,
     ): Promise<T> {
         try {
             const config: AxiosRequestConfig = {
                 method,
                 url,
+                params,
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -98,9 +102,9 @@ class SpotifyService {
         }
     }
 
-    async getUserProfile(session: string): Promise<SpotifyUserProfile> {
+    async getUserProfile(userId: string): Promise<SpotifyUserProfile> {
         try {
-            const spotifyToken = await appwriteService.getSpotifyToken(session);
+            const spotifyToken = await appwriteService.getSpotifyToken(userId);
 
             const profile = await this.makeSpotifyRequest<SpotifyUserProfile>(
                 "GET",
@@ -114,9 +118,9 @@ class SpotifyService {
         }
     }
 
-    async getUserPlaylists(session: string): Promise<SpotifyUserPlaylist[]> {
+    async getUserPlaylists(userId: string): Promise<SpotifyUserPlaylist[]> {
         try {
-            const spotifyToken = await appwriteService.getSpotifyToken(session);
+            const spotifyToken = await appwriteService.getSpotifyToken(userId);
             let allPlaylists: SpotifyUserPlaylist[] = [];
             let url = `${this.SPOTIFY_API_BASE_URL}/me/playlists?limit=50`;
 
@@ -131,6 +135,140 @@ class SpotifyService {
             }
 
             return allPlaylists;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getPlaylistTracks(
+        userId: string,
+        playlistId: string,
+    ): Promise<SpotifyTrack[]> {
+        try {
+            const spotifyToken = await appwriteService.getSpotifyToken(userId);
+            let allTracks: SpotifyTrack[] = [];
+            let url = `${this.SPOTIFY_API_BASE_URL}/playlists/${playlistId}/tracks`;
+            let params = {
+                limit: 50,
+                fields: "next,items(track(id,name,album(name,images),artists(id,name))",
+            };
+
+            while (url) {
+                const response = await this.makeSpotifyRequest<{
+                    items: any[];
+                    next: string | null;
+                }>("GET", url, spotifyToken, null, params);
+
+                allTracks = allTracks.concat(response.items);
+                url = response.next || "";
+            }
+
+            return allTracks;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getArtists(
+        userId: string,
+        artistIds: string[],
+    ): Promise<SpotifyArtist[]> {
+        try {
+            const spotifyToken = await appwriteService.getSpotifyToken(userId);
+            const uniqueArtistIds = [...new Set(artistIds)];
+            let allArtists: SpotifyArtist[] = [];
+
+            // Process in chunks of 50 (Spotify's limit)
+            for (let i = 0; i < uniqueArtistIds.length; i += 50) {
+                const chunk = uniqueArtistIds.slice(i, i + 50);
+                const ids = chunk.join(",");
+
+                const response = await this.makeSpotifyRequest<{
+                    artists: any[];
+                }>(
+                    "GET",
+                    `${this.SPOTIFY_API_BASE_URL}/artists?ids=${ids}`,
+                    spotifyToken,
+                );
+
+                allArtists = allArtists.concat(response.artists);
+
+                // Short delay
+                if (i + 50 < uniqueArtistIds.length) {
+                    await new Promise((resolve) => setTimeout(resolve, 100));
+                }
+            }
+
+            return allArtists;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * The Genres of a track are not present by default, instead they must be extracted by getting the
+     * details of the artists which contains the genres associated with the artist.
+     * // TODO: Since an artist can have a wide range of genres, genres added to the track may not be accurate.
+     *          Need to find a more accurate solution.
+     * @param userId Spotify user Id
+     * @param playlistId Id of the playlist
+     */
+    async getPlaylistTracksWithGenre(
+        userId: string,
+        playlistId: string,
+    ): Promise<{
+        tracks: SpotifyTrack[];
+        availableGenres: string[];
+    }> {
+        try {
+            const tracks = await this.getPlaylistTracks(userId, playlistId);
+
+            const artistIds: string[] = [];
+            tracks.forEach((item) => {
+                if (item.track?.artists) {
+                    item.track.artists.forEach((artist: any) => {
+                        artistIds.push(artist.id);
+                    });
+                }
+            });
+
+            logger.info("length of artist: " + artistIds.length);
+
+            const allArtists = await this.getArtists(userId, artistIds);
+
+            // Artist map for quick lookup
+            const artistMap = new Map(
+                allArtists.map((artist) => [artist.id, artist]),
+            );
+
+            const enrichedTracks = tracks.map((item) => ({
+                ...item,
+                track: {
+                    ...item.track,
+                    artists: item.track?.artists?.map((artist: any) => ({
+                        ...artist,
+                        genres: artistMap.get(artist.id)?.genres || [],
+                    })),
+                },
+            }));
+
+            const allGenres = new Set<string>();
+            allArtists.forEach((artist) => {
+                artist.genres?.forEach((genre: string) => {
+                    allGenres.add(genre);
+                });
+            });
+
+            logger.info("Successfully enriched playlist with genres", {
+                playlistId,
+                tracks: enrichedTracks.length,
+                uniqueGenres: allGenres.size,
+            });
+
+            return {
+                tracks: enrichedTracks,
+                availableGenres: Array.from(allGenres).sort(),
+            };
         } catch (error) {
             throw error;
         }
