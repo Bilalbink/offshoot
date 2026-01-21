@@ -6,5 +6,10 @@ const router = Router();
 
 // Protected route - requires authentication
 router.get("/", verifyJWTMiddleware, playlistController.getUserPlaylists);
+router.get(
+    "/:playlistId/tracks",
+    verifyJWTMiddleware,
+    playlistController.getPlaylistTrackWithGenre,
+);
 
 export default router;

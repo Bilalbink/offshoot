@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import spotifyService from "../services/spotify.service";
 import { ApiResponse } from "../types/api-response.types";
-import type { SpotifyUserPlaylist } from "../types/spotify.types";
+import type { SpotifyUserPlaylist, SpotifyTrack } from "../types/spotify.types";
 
 class PlaylistController {
     /**
@@ -21,6 +21,38 @@ class PlaylistController {
             res.json({
                 success: true,
                 data: allPlaylists,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPlaylistTrackWithGenre(
+        req: Request,
+        res: Response<
+            ApiResponse<{
+                tracks: SpotifyTrack[];
+                availableGenres: string[];
+            }>
+        >,
+        next: NextFunction,
+    ): Promise<void> {
+        try {
+            const userId = req.user!.userId;
+            const { playlistId } = req.params;
+
+            const { tracks, availableGenres } =
+                await spotifyService.getPlaylistTracksWithGenre(
+                    userId,
+                    playlistId,
+                );
+
+            res.json({
+                success: true,
+                data: {
+                    tracks,
+                    availableGenres,
+                },
             });
         } catch (error) {
             next(error);
