@@ -9,6 +9,7 @@ import { ProtectedLayout } from "./components/layouts/ProtectedLayout";
 import Login from "./pages/Login";
 import AuthCallback from "./pages/Callback";
 import Dashboard from "./pages/Dashboard";
+import PlaylistSplitter from "./pages/PlaylistSplitter";
 
 const protectedLoader = async () => {
     if (!authService.isAuthenticated()) {
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
                     {
                         path: "dashboard",
                         element: <Dashboard />,
+                    },
+                    {
+                        path: "playlist-splitter",
+                        element: <PlaylistSplitter />,
                     },
                 ],
             },
