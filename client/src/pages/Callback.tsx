@@ -10,12 +10,9 @@ const AuthCallback = () => {
         const token = searchParams.get("token");
         const error = searchParams.get("error");
 
-        console.log(token);
-        console.log(error);
-
         if (error) {
             console.error("Auth error:", error);
-            navigate("/login?error=" + error);
+            navigate("?error=" + error);
             return;
         }
 
@@ -24,7 +21,7 @@ const AuthCallback = () => {
             authService.setToken(token);
             navigate("/dashboard");
         } else {
-            navigate("/login?error=no_token");
+            navigate("?error=no_token");
         }
     }, [searchParams, navigate]);
 
