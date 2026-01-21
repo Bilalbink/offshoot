@@ -11,5 +11,6 @@ router.get(
     verifyJWTMiddleware,
     playlistController.getPlaylistTrackWithGenre,
 );
+router.post("/split", verifyJWTMiddleware, playlistController.splitPlaylist);
 
 export default router;

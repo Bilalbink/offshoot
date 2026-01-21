@@ -273,6 +273,84 @@ class SpotifyService {
             throw error;
         }
     }
+
+    async createPlaylist(
+        userId: string,
+        spotifyUserId: string,
+        playlistName: string,
+        description: string,
+    ): Promise<SpotifyUserPlaylist> {
+        try {
+            const spotifyToken = await appwriteService.getSpotifyToken(userId);
+
+            const newPlaylist =
+                await this.makeSpotifyRequest<SpotifyUserPlaylist>(
+                    "POST",
+                    `${this.SPOTIFY_API_BASE_URL}/users/${spotifyUserId}/playlists`,
+                    spotifyToken,
+                    {
+                        name: playlistName,
+                        description,
+                    },
+                );
+
+            return newPlaylist;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async addSongsToPlaylist(
+        userId: string,
+        playlistId: string,
+        songUris: string[],
+    ): Promise<string> {
+        try {
+            const spotifyToken = await appwriteService.getSpotifyToken(userId);
+
+            const snapshotId = await this.makeSpotifyRequest<string>(
+                "POST",
+                `${this.SPOTIFY_API_BASE_URL}/playlists/${playlistId}/tracks`,
+                spotifyToken,
+                {
+                    uris: songUris,
+                },
+            );
+
+            return snapshotId;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async splitPlaylist(
+        userId: string,
+        spotifyUserId: string,
+        playlistName: string,
+        description: string,
+        songUris: string[],
+    ): Promise<{
+        message: string;
+        snapshotId: string;
+    }> {
+        const newPlaylist = await this.createPlaylist(
+            userId,
+            spotifyUserId,
+            playlistName,
+            description,
+        );
+
+        const snapshotId = await this.addSongsToPlaylist(
+            userId,
+            newPlaylist.id,
+            songUris,
+        );
+
+        return {
+            message: "Successfully created new playlist",
+            snapshotId,
+        };
+    }
 }
 
 export default new SpotifyService();

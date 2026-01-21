@@ -4,10 +4,6 @@ import { ApiResponse } from "../types/api-response.types";
 import type { SpotifyUserPlaylist, SpotifyTrack } from "../types/spotify.types";
 
 class PlaylistController {
-    /**
-     * GET /api/playlists
-     * Get user's Spotify playlists
-     */
     async getUserPlaylists(
         req: Request,
         res: Response<ApiResponse<SpotifyUserPlaylist[]>>,
@@ -28,7 +24,7 @@ class PlaylistController {
     }
 
     async getPlaylistTrackWithGenre(
-        req: Request,
+        req: Request<{ playlistId: string }, {}, {}>,
         res: Response<
             ApiResponse<{
                 tracks: SpotifyTrack[];
@@ -57,6 +53,45 @@ class PlaylistController {
         } catch (error) {
             next(error);
         }
+    }
+
+    async splitPlaylist(
+        req: Request<
+            {},
+            {},
+            {
+                spotifyUserId: string;
+                playlistName: string;
+                description: string;
+                songUris: string[];
+            }
+        >,
+        res: Response<
+            ApiResponse<{
+                message: string;
+                snapshotId: string;
+            }>
+        >,
+        next: NextFunction,
+    ): Promise<void> {
+        const userId = req.user!.userId;
+        const { spotifyUserId, playlistName, description, songUris } = req.body;
+
+        const { message, snapshotId } = await spotifyService.splitPlaylist(
+            userId,
+            spotifyUserId,
+            playlistName,
+            description,
+            songUris,
+        );
+
+        res.json({
+            success: true,
+            data: {
+                message,
+                snapshotId,
+            },
+        });
     }
 }
 
