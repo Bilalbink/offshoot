@@ -5,7 +5,7 @@ import { useSpotifyPlaylists } from "../../hooks/spotifyHooks";
 import { type SpotifyPlaylist } from "../../types";
 
 const PlaylistSplitter = () => {
-    const { data: playlists, isLoading, error } = useSpotifyPlaylists();
+    const { playlists, isGetPlaylistsLoading, error } = useSpotifyPlaylists();
     const [playlist, setPlaylist] = useState<SpotifyPlaylist | null>(null);
 
     const selectPlaylist = (playlist: SpotifyPlaylist) => {
@@ -26,7 +26,7 @@ const PlaylistSplitter = () => {
                     <TrackView playlist={playlist} />
                 ) : (
                     <PlaylistsView
-                        isLoading={isLoading}
+                        isLoading={isGetPlaylistsLoading}
                         playlists={playlists}
                         error={error}
                         selectPlaylist={selectPlaylist}

@@ -10,54 +10,54 @@ import { useUser } from "../contexts/UserContext";
 
 export const useSpotifyProfile = () => {
     const { setSpotifyUserId } = useUser();
-    const [data, setData] = useState<SpotifyUserProfile | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [profile, setProfile] = useState<SpotifyUserProfile | null>(null);
+    const [isProfileLoading, setIsProfileLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                setIsLoading(true);
-                const profile = await usersApi.getSpotifyProfile();
-                setData(profile);
-                setSpotifyUserId(profile.id);
+                setIsProfileLoading(true);
+                const fetchedProfile = await usersApi.getSpotifyProfile();
+                setProfile(fetchedProfile);
+                setSpotifyUserId(fetchedProfile.id);
                 setError(null);
             } catch (err) {
                 setError(err as Error);
             } finally {
-                setIsLoading(false);
+                setIsProfileLoading(false);
             }
         };
 
         fetchProfile();
     }, []);
 
-    return { data, isLoading, error };
+    return { profile, isProfileLoading, error };
 };
 
 export const useSpotifyPlaylists = () => {
-    const [data, setData] = useState<SpotifyPlaylist[] | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [playlists, setPlaylists] = useState<SpotifyPlaylist[] | null>(null);
+    const [isGetPlaylistsLoading, setIsGetPlaylistsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
         const fetchPlaylists = async () => {
             try {
-                setIsLoading(true);
+                setIsGetPlaylistsLoading(true);
                 const allPlaylists = await playlistsApi.getUserPlaylists();
-                setData(allPlaylists);
+                setPlaylists(allPlaylists);
                 setError(null);
             } catch (err) {
                 setError(err as Error);
             } finally {
-                setIsLoading(false);
+                setIsGetPlaylistsLoading(false);
             }
         };
 
         fetchPlaylists();
     }, []);
 
-    return { data, isLoading, error };
+    return { playlists, isGetPlaylistsLoading, error };
 };
 
 export const useSpotifyPlaylistTracks = (playlistId: string) => {

@@ -3,7 +3,7 @@ import ProfileCard from "./components/ProfileCard";
 import ToolCard from "./components/ToolCard";
 
 const Dashboard = () => {
-    const { data: profile, isLoading, error } = useSpotifyProfile();
+    const { profile, isProfileLoading, error } = useSpotifyProfile();
 
     return (
         <div className="min-h-screen bg-base-300">
@@ -13,7 +13,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Spotify Profile Card */}
-                {isLoading ? (
+                {isProfileLoading ? (
                     <div className="card bg-base-100 shadow-xl mb-8">
                         <div className="card-body">
                             <div className="flex items-center gap-4">
