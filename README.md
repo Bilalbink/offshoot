@@ -12,20 +12,23 @@ Offshoot provides three core features to help you get more out of your Spotify a
 
 ## Roadmap
 
-### Phase 1: Core Features (Current)
+### Phase 1: Core Features
+
 - User authentication via Spotify OAuth through Appwrite
 - Spotify profile integration
 - Basic dashboard interface
 
-### Phase 2: Playlist Management
+### Phase 2: Playlist Management (Current)
+
 - Playlist splitting functionality
-  - Split by number of songs
-  - Split by number of playlists
-  - Split by criteria (genre, mood, decade, BPM)
+    - Split by number of songs
+    - Split by number of playlists
+    - Split by criteria (genre, mood, decade, BPM)
 - Playlist preview and editing
 - Bulk playlist operations
 
 ### Phase 3: Analytics
+
 - Monthly listening statistics
 - Top songs and artists visualization
 - Genre distribution analysis
@@ -33,6 +36,7 @@ Offshoot provides three core features to help you get more out of your Spotify a
 - Shareable monthly wrap reports
 
 ### Phase 4: Discovery
+
 - Integration with an external music recommendation engine
 - Personalized music recommendations
 - Preference-based filtering (energy, popularity, etc.)
@@ -49,6 +53,7 @@ Offshoot provides three core features to help you get more out of your Spotify a
 ### Environment Setup
 
 #### Backend (.env)
+
 ```env
 # Server
 PORT=
@@ -69,6 +74,7 @@ JWT_SECRET=
 ```
 
 #### Frontend (.env)
+
 ```env
 VITE_API_URL=
 ```
@@ -76,36 +82,40 @@ VITE_API_URL=
 ### Installation Steps
 
 1. Install backend dependencies
+
 ```bash
 cd server
 yarn install
 ```
 
 2. Install frontend dependencies
+
 ```bash
 cd ../client
 yarn install
 ```
 
 3. Configure Appwrite
-   - Create a new project in Appwrite
-   - Enable Spotify OAuth provider
-   - Add your Spotify credentials
-   - Copy Appwrite redirect URI
+    - Create a new project in Appwrite
+    - Enable Spotify OAuth provider
+    - Add your Spotify credentials
+    - Copy Appwrite redirect URI
 
 4. Configure Spotify Developer App
-   - Create app at https://developer.spotify.com/dashboard
-   - Add copied Appwrite redirect URI
+    - Create app at https://developer.spotify.com/dashboard
+    - Add copied Appwrite redirect URI
 
 5. Start the development servers
 
 Backend:
+
 ```bash
 cd server
 yarn dev
 ```
 
 Frontend (in a new terminal):
+
 ```bash
 cd client
 yarn dev
@@ -116,6 +126,7 @@ yarn dev
 ## Tech Stack
 
 ### Frontend
+
 - **React** - UI library
 - **TypeScript** - Type safety
 - **React Router v7** - Client-side routing with data loaders
@@ -125,6 +136,7 @@ yarn dev
 - **Vite** - Build tool and dev server
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express** - Web framework
 - **TypeScript** - Type safety
@@ -135,15 +147,18 @@ yarn dev
 - **dotenvx** - Environment variable management
 
 ### External Services
+
 - **Spotify Web API** - Music data and user information
 - **Appwrite Cloud** - OAuth management and user database
 
 ### Development Tools
+
 - **tsx** - TypeScript execution
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 
 ## Project Structure
+
 ```
 offshoot/
 ├── client/                 # Frontend React application
@@ -164,9 +179,9 @@ offshoot/
 │
 └── server/                # Backend Express application
     ├── src/
-    │   ├── config/        # Configuration files    
+    │   ├── config/        # Configuration files
     │   ├── controllers/   # Request handlers
-    │   ├── errors/        # Error definitions 
+    │   ├── errors/        # Error definitions
     │   ├── middleware/    # Express middleware
     │   ├── routes/        # Route definitions
     │   ├── services/      # Business logic
