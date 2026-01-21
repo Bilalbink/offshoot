@@ -4,9 +4,15 @@ type PlaylistsViewProps = {
     isLoading: boolean;
     playlists: SpotifyPlaylist[] | null;
     error: Error | null;
+    selectPlaylist: (playlist: SpotifyPlaylist) => void;
 };
 
-const PlaylistsView = ({ isLoading, playlists, error }: PlaylistsViewProps) => {
+const PlaylistsView = ({
+    isLoading,
+    playlists,
+    error,
+    selectPlaylist,
+}: PlaylistsViewProps) => {
     return (
         <div className="overflow-x-auto">
             <table className="table">
@@ -18,7 +24,24 @@ const PlaylistsView = ({ isLoading, playlists, error }: PlaylistsViewProps) => {
                         <th></th>
                     </tr>
                 </thead>
-                {isLoading ? (
+                {error ? (
+                    <div className="alert alert-error mb-8">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="stroke-current shrink-0 h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                        <span>Failed to load playlists:</span>
+                    </div>
+                ) : isLoading ? (
                     <tbody className="gap-5">
                         {Array.from({ length: 5 }).map((_, index) => (
                             <tr key={index} className="mb-5">
@@ -30,7 +53,7 @@ const PlaylistsView = ({ isLoading, playlists, error }: PlaylistsViewProps) => {
                 ) : (
                     <tbody>
                         {playlists?.map((playlist) => (
-                            <tr>
+                            <tr key={playlist.id}>
                                 <td>
                                     <div className=" flex items-center gap-3">
                                         <div className="avatar">
@@ -50,7 +73,10 @@ const PlaylistsView = ({ isLoading, playlists, error }: PlaylistsViewProps) => {
                                 </td>
                                 <td>{playlist.owner.display_name}</td>
                                 <th>
-                                    <button className="btn btn-primary btn-xs">
+                                    <button
+                                        className="btn btn-primary btn-xs"
+                                        onClick={() => selectPlaylist(playlist)}
+                                    >
                                         Select
                                     </button>
                                 </th>
