@@ -1,19 +1,19 @@
-import { useSpotifyProfile } from "../../hooks/useSpotifyProfile";
+import { useSpotifyProfile } from "../../hooks/spotifyHooks";
 import ProfileCard from "./components/ProfileCard";
 import ToolCard from "./components/ToolCard";
 
 const Dashboard = () => {
-    const { data: profile, isLoading, error } = useSpotifyProfile();
+    const { profile, isProfileLoading, error } = useSpotifyProfile();
 
     return (
         <div className="min-h-screen bg-base-300">
             <div className="container mx-auto p-8 max-w-3xl">
-                <div className="mb-8">
+                <div className="mt-12 mb-8">
                     <h1 className="text-5xl font-bold mb-2">Welcome back</h1>
                 </div>
 
                 {/* Spotify Profile Card */}
-                {isLoading ? (
+                {isProfileLoading ? (
                     <div className="card bg-base-100 shadow-xl mb-8">
                         <div className="card-body">
                             <div className="flex items-center gap-4">
@@ -47,17 +47,11 @@ const Dashboard = () => {
                         <ProfileCard profile={profile} />
                     </div>
                 ) : null}
-
-                {/* Tools Section */}
-                <div className="mb-4">
-                    <h2 className="text-3xl font-bold">Choose a Tool</h2>
-                </div>
-
-                <div className="flex flex-col items-center gap-5">
-                    <ToolCard type="playlist-splitter" />
-                    <ToolCard type="monthly-wrap" />
-                    <ToolCard type="discover" />
-                </div>
+            </div>
+            <div className="flex flex-row justify-center gap-5 ">
+                <ToolCard type="playlist-splitter" />
+                <ToolCard type="monthly-wrap" />
+                <ToolCard type="discover" />
             </div>
         </div>
     );

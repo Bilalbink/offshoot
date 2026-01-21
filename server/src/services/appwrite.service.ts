@@ -5,7 +5,7 @@ class AppwriteService {
     /**
      * Get user's Spotify access token from Appwrite
      */
-    async getSpotifyToken(userId: string): Promise<string | null> {
+    async getSpotifyToken(userId: string): Promise<string> {
         try {
             const { users } = createAdminClient();
             // Get user's OAuth identities
@@ -25,7 +25,11 @@ class AppwriteService {
 
             if (!spotifyIdentity) {
                 logger.warn("No Spotify identity found for user", { userId });
-                return null;
+                throw new Error("No Spotify identity found for user");
+            }
+
+            if (!spotifyIdentity.providerAccessToken) {
+                throw new Error("No Spotify token found");
             }
 
             return spotifyIdentity.providerAccessToken;

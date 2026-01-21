@@ -1,6 +1,7 @@
 import { Router } from "express";
 import userRoutes from "./user.routes";
 import authRoutes from "./auth.routes";
+import playlistRoutes from "./playlists.routes";
 
 const router = Router();
 
@@ -9,5 +10,6 @@ const router = Router();
  */
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
+router.use("/playlists", playlistRoutes);
 
 export default router;

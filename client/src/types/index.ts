@@ -31,6 +31,61 @@ export interface SpotifyUserProfile {
     uri: string;
 }
 
+export interface SpotifyPlaylist {
+    collaborative: boolean;
+    description: string;
+    external_urls: {
+        spotify: string;
+    };
+    href: string;
+    id: string;
+    images: {
+        url: string;
+        height: number | null;
+        width: number | null;
+    }[];
+    name: string;
+    owner: {
+        external_urls: {
+            spotify: string;
+        };
+        href: string;
+        id: string;
+        type: "user";
+        uri: string;
+        display_name: string;
+    };
+    public: boolean;
+    snapshot_id: string;
+    tracks: {
+        href: string;
+        total: number;
+    };
+    type: "playlist";
+    uri: string;
+    primary_color: string | null;
+}
+
+export interface SpotifyTrack {
+    track: {
+        id: string;
+        name: string;
+        album: {
+            name: string;
+            images: {
+                url: string;
+                width: number;
+                height: number;
+            }[];
+        };
+        artists: {
+            id: string;
+            name: string;
+            genres?: string[];
+        }[];
+    };
+}
+
 export type ApiResponse<T> = {
     success: boolean;
     data: T;
