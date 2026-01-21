@@ -78,7 +78,7 @@ export const zSpotifyArtistSchema = z.object({
     id: z.string(),
     images: z.array(
         z.object({
-            url: z.string().url(),
+            url: z.url(),
             height: z.number().nullable(),
             width: z.number().nullable(),
         }),
@@ -87,4 +87,11 @@ export const zSpotifyArtistSchema = z.object({
     popularity: z.number(),
     type: z.literal("artist"),
     uri: z.string(),
+});
+
+export const zSplitPlaylistRequestSchema = z.object({
+    spotifyUserId: z.string(),
+    playlistName: z.string(),
+    description: z.string(),
+    songUris: z.array(z.string()),
 });
