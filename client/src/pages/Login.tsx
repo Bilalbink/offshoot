@@ -8,17 +8,20 @@ const Login = () => {
     };
 
     return (
-        <div className="hero bg-base-200 min-h-screen">
-            <div className="hero-content text-center">
-                <div className="max-w-md">
-                    <h1 className="text-5xl font-bold py-6">
+        <div className="hero min-h-screen bg-[url('/home-background.jpg')] bg-cover bg-center relative">
+            <div className="hero-content text-center relative z-10">
+                <div className="max-w-lg">
+                    <h1 className="text-5xl font-bold py-6 text-white">
                         Welcome to Offshoot
                     </h1>
+                    <p className="text-lg">
+                        Log in to your Spotify account to start!
+                    </p>
                     <button
-                        className="btn btn-primary"
-                        onClick={() => handleLogin()}
+                        className="mt-8 btn btn-primary"
+                        onClick={handleLogin}
                     >
-                        Get Started
+                        Login With Spotify
                     </button>
                 </div>
             </div>
