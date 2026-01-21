@@ -72,13 +72,16 @@ const TrackView = ({ playlist }: TrackViewProps) => {
         }
     };
 
-    const createPlaylist = (playlistName: string, description: string) => {
-        const filteredSongUris = currentTracks.map(
+    const createPlaylist = async (
+        playlistName: string,
+        description: string,
+    ) => {
+        const filteredSongUris = filteredTracks.map(
             (track) => `spotify:track:${track.track.id}`,
         );
 
         if (spotifyUserId) {
-            splitPlaylist(
+            await splitPlaylist(
                 spotifyUserId,
                 playlistName,
                 description,
