@@ -40,3 +40,51 @@ export const zSpotifyUserPlaylistSchema = z.object({
     uri: z.string(),
     primary_color: z.string().nullable(),
 });
+
+export const zSpotifyTrackSchema = z.object({
+    track: z.object({
+        id: z.string(),
+        name: z.string(),
+        album: z.object({
+            name: z.string(),
+            images: z.array(
+                z.object({
+                    url: z.url(),
+                    width: z.number(),
+                    height: z.number(),
+                }),
+            ),
+        }),
+        artists: z.array(
+            z.object({
+                id: z.string(),
+                name: z.string(),
+                genres: z.array(z.string()).optional(),
+            }),
+        ),
+    }),
+});
+
+export const zSpotifyArtistSchema = z.object({
+    external_urls: z.object({
+        spotify: z.url(),
+    }),
+    followers: z.object({
+        href: z.string().nullable(),
+        total: z.number(),
+    }),
+    genres: z.array(z.string()),
+    href: z.url(),
+    id: z.string(),
+    images: z.array(
+        z.object({
+            url: z.string().url(),
+            height: z.number().nullable(),
+            width: z.number().nullable(),
+        }),
+    ),
+    name: z.string(),
+    popularity: z.number(),
+    type: z.literal("artist"),
+    uri: z.string(),
+});

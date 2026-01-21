@@ -66,6 +66,26 @@ export interface SpotifyPlaylist {
     primary_color: string | null;
 }
 
+export interface SpotifyTrack {
+    track: {
+        id: string;
+        name: string;
+        album: {
+            name: string;
+            images: {
+                url: string;
+                width: number;
+                height: number;
+            }[];
+        };
+        artists: {
+            id: string;
+            name: string;
+            genres?: string[];
+        }[];
+    };
+}
+
 export type ApiResponse<T> = {
     success: boolean;
     data: T;
