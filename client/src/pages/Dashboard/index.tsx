@@ -1,4 +1,4 @@
-import { useSpotifyProfile } from "../../hooks/useSpotifyProfile";
+import { useSpotifyProfile } from "../../hooks/spotifyHooks";
 import ProfileCard from "./components/ProfileCard";
 import ToolCard from "./components/ToolCard";
 
