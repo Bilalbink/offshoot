@@ -8,7 +8,7 @@ const Dashboard = () => {
     return (
         <div className="min-h-screen bg-base-300">
             <div className="container mx-auto p-8 max-w-3xl">
-                <div className="mb-8">
+                <div className="mt-12 mb-8">
                     <h1 className="text-5xl font-bold mb-2">Welcome back</h1>
                 </div>
 
@@ -47,17 +47,11 @@ const Dashboard = () => {
                         <ProfileCard profile={profile} />
                     </div>
                 ) : null}
-
-                {/* Tools Section */}
-                <div className="mb-4">
-                    <h2 className="text-3xl font-bold">Choose a Tool</h2>
-                </div>
-
-                <div className="flex flex-col items-center gap-5">
-                    <ToolCard type="playlist-splitter" />
-                    <ToolCard type="monthly-wrap" />
-                    <ToolCard type="discover" />
-                </div>
+            </div>
+            <div className="flex flex-row justify-center gap-5 ">
+                <ToolCard type="playlist-splitter" />
+                <ToolCard type="monthly-wrap" />
+                <ToolCard type="discover" />
             </div>
         </div>
     );
