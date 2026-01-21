@@ -8,7 +8,7 @@ const authService = {
 
     logout: () => {
         localStorage.removeItem("auth_token");
-        window.location.href = "/login";
+        window.location.href = "/";
     },
 
     getToken: (): string | null => {

@@ -1,10 +1,29 @@
 import { Outlet } from "react-router-dom";
-export default function ProtectedLayout() {
+import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
+export const ProtectedLayout = () => {
+    const { authService } = useAuth();
+
+    const handleLogout = () => {
+        authService.logout();
+    };
+
     return (
         <div>
+            <div className="navbar bg-neutral text-neutral-content justify-between">
+                <Link to="/dashboard" className="btn btn-ghost text-xl">
+                    Offshoot
+                </Link>
+                <button
+                    className="btn btn-ghost text-md"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
+            </div>
             <main>
                 <Outlet />
             </main>
         </div>
     );
-}
+};
