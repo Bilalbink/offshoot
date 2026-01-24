@@ -10,6 +10,9 @@ import routes from "./routes";
 
 const app = express();
 
+// Trust Fly.io proxy
+app.set("trust proxy", 1);
+
 // Security headers
 app.use(helmet());
 

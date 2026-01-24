@@ -19,13 +19,13 @@ const PlaylistSplitter = () => {
     return (
         <div className="min-h-screen bg-base-300">
             <div className="container mx-auto p-8 max-w-3xl">
-                <div className="relative mb-8 mt-12 ">
+                <div className="mb-8 mt-12">
                     {playlist && (
                         <button
-                            className="btn btn-ghost absolute top-0 text-primary"
+                            className="btn btn-ghost text-primary mb-4"
                             onClick={() => resetSelectedPlaylist()}
                         >
-                            {"<"} Go Back
+                            Go Back
                         </button>
                     )}
                     <h1 className="text-3xl font-bold text-center">

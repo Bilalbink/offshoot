@@ -25,7 +25,7 @@ const SplitPlaylistModal = ({
     return (
         <dialog
             id="split-playlist-modal"
-            className="modal modal-bottom sm:modal-middle"
+            className="modal modal-bottom modal-middle "
         >
             <div className="modal-box">
                 <form method="dialog">
