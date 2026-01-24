@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - master
+        workflow_dispatch:
 
 jobs:
     # Detect what changed
@@ -41,7 +42,7 @@ jobs:
               uses: superfly/flyctl-actions/setup-flyctl@master
 
             - name: Deploy Client to Fly.io
-              run: flyctl deploy --local-only
+              run: flyctl deploy --remote-only
               working-directory: ./client
               env:
                   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -61,7 +62,7 @@ jobs:
               uses: superfly/flyctl-actions/setup-flyctl@master
 
             - name: Deploy Server to Fly.io
-              run: flyctl deploy --local-only
+              run: flyctl deploy --remote-only
               working-directory: ./server
               env:
                   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
