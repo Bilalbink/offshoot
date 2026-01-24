@@ -48,7 +48,7 @@ const Dashboard = () => {
                     </div>
                 ) : null}
             </div>
-            <div className="flex flex-row justify-center gap-5 ">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-5 ">
                 <ToolCard type="playlist-splitter" />
                 <ToolCard type="monthly-wrap" />
                 <ToolCard type="discover" />
