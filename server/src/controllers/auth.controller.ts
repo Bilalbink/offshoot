@@ -56,7 +56,7 @@ class AuthController {
             if (!userId || !secret) {
                 logger.error("Missing userId or secret in callback");
                 res.redirect(
-                    `${spotifyConfig.frontendUri}/login?error=missing_params`,
+                    `${serverConfig.frontendUri}/login?error=missing_params`,
                 );
                 return;
             }
@@ -75,12 +75,12 @@ class AuthController {
 
             // Redirect to frontend with JWT
             res.redirect(
-                `${spotifyConfig.frontendUri}/auth/callback?token=${token}`,
+                `${serverConfig.frontendUri}/auth/callback?token=${token}`,
             );
         } catch (error) {
             logger.error("OAuth callback failed", { error });
             res.redirect(
-                `${spotifyConfig.frontendUri}/auth/callback?error=auth_callback_failed`,
+                `${serverConfig.frontendUri}/auth/callback?error=auth_callback_failed`,
             );
         }
     }
