@@ -4,6 +4,7 @@ export const serverConfig = {
     port: process.env.PORT || 3000,
     corsOrigin: process.env.CORS_ORIGIN!,
     nodeEnv: process.env.NODE_ENV || "development",
+    frontendUri: process.env.FRONTEND_URI,
     backendUrl: process.env.BACKEND_URL!,
     jwtSecret: process.env.JWT_SECRET!,
 };
