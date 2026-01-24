@@ -1,0 +1,65 @@
+name: Deploy to Fly.io
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    # Detect what changed
+    changes:
+        runs-on: ubuntu-latest
+        outputs:
+            client: ${{ steps.filter.outputs.client }}
+            server: ${{ steps.filter.outputs.server }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Check for changes
+              uses: dorny/paths-filter@v3
+              id: filter
+              with:
+                  filters: |
+                      client:
+                        - 'client/**'
+                      server:
+                        - 'server/**'
+
+    # Deploy client only if client code changed
+    deploy-client:
+        name: Deploy Client
+        runs-on: ubuntu-latest
+        needs: changes
+        if: needs.changes.outputs.client == 'true'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Flyctl
+              uses: superfly/flyctl-actions/setup-flyctl@master
+
+            - name: Deploy Client to Fly.io
+              run: flyctl deploy --remote-only --config ./client/fly.toml
+              env:
+                  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+    # Deploy server only if server code changed
+    deploy-server:
+        name: Deploy Server
+        runs-on: ubuntu-latest
+        needs: changes
+        if: needs.changes.outputs.server == 'true'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Flyctl
+              uses: superfly/flyctl-actions/setup-flyctl@master
+
+            - name: Deploy Server to Fly.io
+              run: flyctl deploy --remote-only --config ./server/fly.toml
+              env:
+                  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
