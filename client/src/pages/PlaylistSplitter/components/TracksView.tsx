@@ -115,13 +115,16 @@ const TrackView = ({ playlist }: TrackViewProps) => {
             ) : (
                 <div>
                     {/* Filters and Stats */}
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="text-sm text-base-content/60">
-                            Total Tracks:{" "}
-                            <span className="font-bold">{totalTracks}</span>
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+                        {/* Left side - Stats and Button */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <div className="text-sm text-base-content/60 whitespace-nowrap">
+                                Total Tracks:{" "}
+                                <span className="font-bold">{totalTracks}</span>
+                            </div>
                             {selectedGenre && (
                                 <button
-                                    className="btn btn-s btn-primary ml-6 "
+                                    className="btn btn-sm btn-primary"
                                     onClick={() => toggleModal()}
                                 >
                                     Split Playlist
@@ -129,10 +132,10 @@ const TrackView = ({ playlist }: TrackViewProps) => {
                             )}
                         </div>
 
-                        {/* Genre Filter */}
-                        <div className="form-control w-full max-w-xs">
+                        {/* Right side - Genre Filter */}
+                        <div className="form-control w-full md:max-w-xs">
                             <select
-                                className="select select-bordered"
+                                className="select select-bordered w-full"
                                 value={selectedGenre}
                                 onChange={(e) =>
                                     handleGenreChange(e.target.value)
