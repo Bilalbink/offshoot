@@ -41,7 +41,7 @@ jobs:
               uses: superfly/flyctl-actions/setup-flyctl@master
 
             - name: Deploy Client to Fly.io
-              run: flyctl deploy --remote-only
+              run: flyctl deploy --local-only
               working-directory: ./client
               env:
                   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -61,7 +61,7 @@ jobs:
               uses: superfly/flyctl-actions/setup-flyctl@master
 
             - name: Deploy Server to Fly.io
-              run: flyctl deploy --remote-only
+              run: flyctl deploy --local-only
               working-directory: ./server
               env:
                   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
